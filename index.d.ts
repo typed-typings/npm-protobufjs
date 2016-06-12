@@ -3,111 +3,301 @@
 // Definitions by: Panu Horsmalahti <https://github.com/panuhorsmalahti>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
+import ByteBuffer = require('bytebuffer');
+import Long = require('long');
+
+import {Map} from './src/ProtoBuf/Map';
+import {Builder} from './src/ProtoBuf/Builder';
+import {Reflect} from './src/ProtoBuf/Reflect';
+
 // ==========
 // protobufjs/src/ProtoBuf.js
 
-declare var Builder: Builder;
-declare var ByteBuffer: Buffer;
-declare var Long: LongStatic;
-declare var DotProto: DotProto;
-declare var Reflect: Reflect;
+export {ByteBuffer, Long};
 
-// declare var Lang: Lang; TODO: implement interface Lang
-// declare var Util: Util; TODO: implement interface Util
+/**
+ * ProtoBuf.js version.
+ * @type {string}
+ * @const
+ * @expose
+ */
+export const VERSION: string;
 
-export function loadJson(json: string, builder?: ProtoBuilder,
-    filename?: string): ProtoBuilder;
+/**
+ * Wire types.
+ * @type {Object.<string,number>}
+ * @const
+ * @expose
+ */
+export const WIRE_TYPES: {
+  /**
+   * Varint wire type.
+   * @type {number}
+   * @expose
+   */
+  VARINT: number;
+  /**
+   * Fixed 64 bits wire type.
+   * @type {number}
+   * @const
+   * @expose
+   */
+  BITS64: number;
+  /**
+   * Length delimited wire type.
+   * @type {number}
+   * @const
+   * @expose
+   */
+  LDELIM: number;
+  /**
+   * Start group wire type.
+   * @type {number}
+   * @const
+   * @expose
+   */
+  STARTGROUP: number;
+  /**
+   * End group wire type.
+   * @type {number}
+   * @const
+   * @expose
+   */
+  ENDGROUP: number;
+  /**
+   * Fixed 32 bits wire type.
+   * @type {number}
+   * @const
+   * @expose
+   */
+  BITS32: number;
+};
 
-export function loadJsonFile(filename: string,
-    callback?: (error: any, builder: ProtoBuilder) => void,
-    builder?: ProtoBuilder): ProtoBuilder;
+/**
+ * Packable wire types.
+ * @type {!Array.<number>}
+ * @const
+ * @expose
+ */
+export const PACKABLE_WIRE_TYPES: number[];
 
-export function loadProto(proto: string, builder?: ProtoBuilder,
-    filename?: string): ProtoBuilder;
+export interface WireTuple {
+  name: string,
+  wireType: number,
+  defaultValue: number,
+}
 
+/**
+ * Types.
+ * @dict
+ * @type {!Object.<string,{name: string, wireType: number, defaultValue: *}>}
+ * @const
+ * @expose
+ */
+export const TYPES: {
+  [name: string]: WireTuple;
+};
+
+/**
+ * Valid map key types.
+ * @type {!Array.<!Object.<string,{name: string, wireType: number, defaultValue: *}>>}
+ * @const
+ * @expose
+ */
+export const MAP_KEY_TYPES: WireTuple[];
+
+/** Maximum field id. */
+export const ID_MAX: number;
+/** Minimum field id. */
+export const ID_MIN: number;
+
+/**
+ * If set to `true`, field names will be converted from underscore notation to camel case. Defaults to `false`.
+ *  Must be set prior to parsing.
+ * @type {boolean}
+ * @expose
+ */
+export var convertFieldsToCamelCase: boolean;
+
+/**
+ * By default, messages are populated with (setX, set_x) accessors for each field. This can be disabled by
+ *  setting this to `false` prior to building messages.
+ * @type {boolean}
+ * @expose
+ */
+export var populateAccessors: boolean;
+
+/**
+ * By default, messages are populated with default values if a field is not present on the wire. To disable
+ *  this behavior, set this setting to `false`.
+ * @type {boolean}
+ * @expose
+ */
+export var populateDefaults: boolean;
+
+// TODO - Util
+
+export interface Lang {
+  /** Characters always ending a statement */
+  DELIM: RegExp;
+  /** Field rules */
+  RULE: RegExp;
+  /** Field types */
+  TYPE: RegExp;
+  /** Names */
+  NAME: RegExp;
+  /** Type definitions */
+  TYPEDEF: RegExp;
+  /** Type references */
+  TYPEREF: RegExp;
+  /** Fully qualified type references */
+  FQTYPEREF: RegExp;
+  /** All numbers */
+  NUMBER: RegExp;
+  /** Decimal numbers */
+  NUMBER_DEC: RegExp;
+  /** Hexadecimal numbers */
+  NUMBER_HEX: RegExp;
+  /** Octal numbers */
+  NUMBER_OCT: RegExp;
+  /** Floating point numbers */
+  NUMBER_FLT: RegExp;
+  /** Booleans */
+  BOOL: RegExp;
+  /** Id numbers */
+  ID: RegExp;
+  /** Negative id numbers (enum values) */
+  NEGID: RegExp;
+  /** Whitespaces */
+  WHITESPACE: RegExp;
+  /** All strings */
+  STRING: RegExp;
+  /** Double quoted strings */
+  STRING_DQ: RegExp;
+  /** Single quoted strings */
+  STRING_SQ: RegExp;
+
+  [key: string]: RegExp;
+}
+export const Lang: Lang;
+
+import * as DotProto from './src/ProtoBuf/DotProto';
+
+export {DotProto};
+
+export {Reflect};
+
+export {Builder};
+
+export {Map};
+
+/**
+ * Loads a .proto string and returns the Builder.
+ * @param {string} proto .proto file contents
+ * @param {(ProtoBuf.Builder|string|{root: string, file: string})=} builder Builder to append to. Will create a new one if omitted.
+ * @param {(string|{root: string, file: string})=} filename The corresponding file name if known. Must be specified for imports.
+ * @return {ProtoBuf.Builder} Builder to create new messages
+ * @throws {Error} If the definition cannot be parsed or built
+ * @expose
+ */
+export function loadProto(proto: string, builder?: Builder,
+    filename?: string): Builder;
+
+/**
+ * Loads a .proto string and returns the Builder. This is an alias of {@link ProtoBuf.loadProto}.
+ * @function
+ * @param {string} proto .proto file contents
+ * @param {(ProtoBuf.Builder|string)=} builder Builder to append to. Will create a new one if omitted.
+ * @param {(string|{root: string, file: string})=} filename The corresponding file name if known. Must be specified for imports.
+ * @return {ProtoBuf.Builder} Builder to create new messages
+ * @throws {Error} If the definition cannot be parsed or built
+ * @expose
+ */
+export function protoFromString(proto: string, builder?: Builder,
+    filename?: string): Builder; // Legacy
+
+/**
+ * Loads a .proto file and returns the Builder.
+ * @param {string|{root: string, file: string}} filename Path to proto file or an object specifying 'file' with
+ *  an overridden 'root' path for all imported files.
+ * @param {function(?Error, !ProtoBuf.Builder=)=} callback Callback that will receive `null` as the first and
+ *  the Builder as its second argument on success, otherwise the error as its first argument. If omitted, the
+ *  file will be read synchronously and this function will return the Builder.
+ * @param {ProtoBuf.Builder=} builder Builder to append to. Will create a new one if omitted.
+ * @return {?ProtoBuf.Builder|undefined} The Builder if synchronous (no callback specified, will be NULL if the
+ *   request has failed), else undefined
+ * @expose
+ */
 export function loadProtoFile(filePath: string,
-    callback?: (error: any, builder: ProtoBuilder) => void,
-    builder?: ProtoBuilder): ProtoBuilder;
+    callback?: (error: any, builder: Builder) => void,
+    builder?: Builder): Builder;
+export function loadProtoFile(filePath: string,
+    builder?: Builder): Builder;
 
-export function newBuilder(options?: {[key: string]: any}): ProtoBuilder;
+/**
+ * Loads a .proto file and returns the Builder. This is an alias of {@link ProtoBuf.loadProtoFile}.
+ * @function
+ * @param {string|{root: string, file: string}} filename Path to proto file or an object specifying 'file' with
+ *  an overridden 'root' path for all imported files.
+ * @param {function(?Error, !ProtoBuf.Builder=)=} callback Callback that will receive `null` as the first and
+ *  the Builder as its second argument on success, otherwise the error as its first argument. If omitted, the
+ *  file will be read synchronously and this function will return the Builder.
+ * @param {ProtoBuf.Builder=} builder Builder to append to. Will create a new one if omitted.
+ * @return {!ProtoBuf.Builder|undefined} The Builder if synchronous (no callback specified, will be NULL if the
+ *   request has failed), else undefined
+ * @expose
+ */
 
-export interface LongStatic {
-  new(low?: number, high?: number, unsigned?:boolean): Long;
+export function protoFromFile(filePath: string,
+    callback?: (error: any, builder: Builder) => void,
+    builder?: Builder): Builder; // Legacy
+export function protoFromFile(filePath: string,
+    builder?: Builder): Builder; // Legacy
 
-  MAX_UNSIGNED_VALUE: Long;
-  MAX_VALUE: Long;
-  MIN_VALUE: Long;
-  NEG_ONE: Long;
-  ONE: Long;
-  UONE: Long;
-  UZERO: Long;
-  ZERO: Long;
+/**
+ * Constructs a new empty Builder.
+ * @param {Object.<string,*>=} options Builder options, defaults to global options set on ProtoBuf
+ * @return {!ProtoBuf.Builder} Builder
+ * @expose
+ */
+export function newBuilder(options?: {[key: string]: any}): Builder;
 
-  fromBits(lowBits: number, highBits: number, unsigned?: boolean): Long;
-  fromInt(value: number, unsigned?: boolean): Long;
-  fromNumber(value: number, unsigned?: boolean): Long;
-  fromString(str: string, unsigned?: boolean | number, radix?: number): Long;
-  fromValue(val: Long | number | string): Long;
+/**
+ * Loads a .json definition and returns the Builder.
+ * @param {!*|string} json JSON definition
+ * @param {(ProtoBuf.Builder|string|{root: string, file: string})=} builder Builder to append to. Will create a new one if omitted.
+ * @param {(string|{root: string, file: string})=} filename The corresponding file name if known. Must be specified for imports.
+ * @return {ProtoBuf.Builder} Builder to create new messages
+ * @throws {Error} If the definition cannot be parsed or built
+ * @expose
+ */
+export function loadJson(
+  json: string,
+  builder?: Builder | string | { root: string, file: string },
+  filename?: string | { root: string, file: string }
+): Builder;
 
-  isLong(obj: any): boolean;
-}
-
-// Based on https://github.com/dcodeIO/Long.js and https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/long/long.d.ts
-export interface Long {
-  high: number;
-  low: number;
-  unsigned :boolean;
-
-  add(other: Long | number | string): Long;
-  and(other: Long | number | string): Long;
-  compare(other: Long | number | string): number;
-  div(divisor: Long | number | string): Long;
-  equals(other: Long | number | string): boolean;
-  getHighBits(): number;
-  getHighBitsUnsigned(): number;
-  getLowBits(): number;
-  getLowBitsUnsigned(): number;
-  getNumBitsAbs(): number;
-  greaterThan(other: Long | number | string): boolean;
-  greaterThanOrEqual(other: Long | number | string): boolean;
-  isEven(): boolean;
-  isNegative(): boolean;
-  isOdd(): boolean;
-  isPositive(): boolean;
-  isZero(): boolean;
-  lessThan(other: Long | number | string): boolean;
-  lessThanOrEqual(other: Long | number | string): boolean;
-  modulo(divisor: Long | number | string): Long;
-  multiply(multiplier: Long | number | string): Long;
-  negate(): Long;
-  not(): Long;
-  notEquals(other: Long | number | string): boolean;
-  or(other: Long | number | string): Long;
-  shiftLeft(numBits: number | Long): Long;
-  shiftRight(numBits: number | Long): Long;
-  shiftRightUnsigned(numBits: number | Long): Long;
-  subtract(other: Long | number | string): Long;
-  toInt(): number;
-  toNumber(): number;
-  toSigned(): Long;
-  toString(radix?: number): string;
-  toUnsigned(): Long;
-  xor(other: Long | number | string): Long;
-}
-
-// ==========
-// protobufjs/src/ProtoBuf/Builder.js
-
-export interface Builder {
-    new(options?: {[key: string]: any}): ProtoBuilder;
-    Message: Message;
-    Service: Service;
-    isValidMessage(def: {[key: string]: any}): boolean;
-    isValidMessageField(def: {[key: string]: any}): boolean;
-    isValidEnum(def: {[key: string]: any}): boolean;
-    isValidService(def: {[key: string]: any}): boolean;
-    isValidExtend(def: {[key: string]: any}): boolean;
-}
+/**
+ * Loads a .json file and returns the Builder.
+ * @param {string|!{root: string, file: string}} filename Path to json file or an object specifying 'file' with
+ *  an overridden 'root' path for all imported files.
+ * @param {function(?Error, !ProtoBuf.Builder=)=} callback Callback that will receive `null` as the first and
+ *  the Builder as its second argument on success, otherwise the error as its first argument. If omitted, the
+ *  file will be read synchronously and this function will return the Builder.
+ * @param {ProtoBuf.Builder=} builder Builder to append to. Will create a new one if omitted.
+ * @return {?ProtoBuf.Builder|undefined} The Builder if synchronous (no callback specified, will be NULL if the
+ *   request has failed), else undefined
+ * @expose
+ */
+export function loadJsonFile(
+  filename: string | { root: string, file: string },
+  callback: (error: Error, builder: Builder) => void,
+  builder?: Builder
+): void;
+export function loadJsonFile(
+  filename: string | { root: string, file: string },
+  builder?: Builder
+): Builder;
 
 /**
  * TODO: Confirm that message needs no further implementation
@@ -125,256 +315,4 @@ export interface Service {
 }
 
 
-// ==========
-// meta objects for constructing protobufs
-
-export interface ProtoBuilder {
-    ns: ReflectNamespace;
-    ptr: ReflectNamespace;
-    resolved: boolean;
-    result: ProtoBuf;
-    files: string[];
-    importRoot: string;
-    options: {[key: string]: any};
-    syntax: string;
-    reset(): void;
-    define(pkg: string, options?: {[key: string]: any}): ProtoBuilder;
-    create(defs?: {[key: string]: any}[]): ProtoBuilder;
-    resolveAll(): void;
-    build(path?: string): ProtoBuf;
-    lookup(path?: string): ReflectT;
-}
-
-export interface ProtoBuf {
-    [Package: string]: {[key: string]: MetaMessage | any};
-}
-
-export interface MetaMessage {
-    new(values?: {[key: string]: any}, var_args?: string[]): Message;
-    decode(buffer?: Buffer, enc?: string): Message;
-    decodeDelimited(buffer?: Buffer, enc?: string): Message;
-    decode64(str: string): Message;
-    decodeHex(str: string): Message;
-}
-
-// ==========
-// protobufjs/src/ProtoBuf/DotProto.js
-
-export interface DotProto {
-    Parser: Parser;
-    Tokenizer: Tokenizer;
-}
-
-export interface Parser {
-    new(proto: string): Parser;
-    tn: Tokenizer;
-    parse(): MetaProto;
-    toString(): string;
-}
-
-export interface Tokenizer {
-    new(proto: string): Tokenizer;
-    source: string;
-    index: number;
-    line: number;
-    stack: string[];
-    readingString: boolean;
-    stringEndsWith: string;
-    next(): string;
-    peek(): string;
-    toString(): string;
-}
-
-// ==========
-// proto meta information returned by the Parser
-
-export interface MetaProto {
-    package: string;
-    messages: ProtoMessage[];
-    enums: ProtoEnum[];
-    imports: string[];
-    options: {[key: string]: any};
-    services: ProtoService[];
-}
-
-export interface ProtoEnum {
-    name: string;
-    values: ProtoEnumValue[];
-    options: {[key: string]: any};
-}
-
-export interface ProtoEnumValue {
-    name: string;
-    id: string;
-}
-
-export interface ProtoField {
-    rule: string;
-    options: {[key: string]: any};
-    type: string;
-    name: string;
-    id: number;
-    oneof?: string;
-}
-
-export interface ProtoMessage {
-    name: string;
-    isGroup?: boolean;
-    fields: ProtoField[];
-    enums: ProtoEnum[];
-    messages: ProtoMessage[];
-    options: {[key: string]: any};
-    oneofs: {[key: string]:number[]};
-}
-
-export interface ProtoRpcService {
-    request: string;
-    response: string;
-    options: {[key: string]: any};
-}
-
-export interface ProtoService {
-    name: string;
-    rpc: {[key: string]:ProtoRpcService};
-    options: {[key: string]: any};
-}
-
-
-// ==========
-// protobufjs/src/ProtoBuf/Reflect.js
-
-export interface Reflect {
-    T: ReflectT;
-    Namespace: ReflectNamespace;
-    Message: ReflectMessage;
-    Enum: ReflectEnum;
-    Extension: ReflectExtension;
-    Service: ReflectService;
-}
-
-export interface ReflectT {
-    new(builder?: ProtoBuilder, parent?: ReflectT, name?: string): ReflectT;
-    builder: ProtoBuilder;
-    parent: ReflectT;
-    name: string;
-    fqn(): string;
-    toString(includeClass?: boolean): string;
-}
-
-export interface ReflectNamespace extends ReflectT {
-    new(builder?: ProtoBuilder, parent?: ReflectNamespace, name?: string,
-        options?: {[key: string]: any}): ReflectNamespace;
-    className: string;
-    children: ReflectT[];
-    options: {[key: string]: any};
-    syntax: string;
-    getChildren(type?: ReflectT): ReflectT[];
-    addChild(child: ReflectT): void;
-    getChild(nameOrId?: string | number): ReflectT;
-    resolve(qn: string, excludeFields?: boolean): ReflectNamespace;
-    build(): ProtoBuf;
-    buildOpt(): {[key: string]: any};
-    getOption(name?: string): any;
-}
-
-export interface ReflectMessage extends ReflectNamespace {
-    new(builder?: ProtoBuilder, parent?: ReflectNamespace, name?: string,
-        options?: {[key: string]: any}, isGroup?: boolean): ReflectMessage;
-    Field: ReflectField; // NOTE: only for new ProtoBuf.Reflect.Message.Field();
-    ExtensionField: ReflectExtensionField; // NOTE: only for
-                                      // new ProtoBuf.Reflect.Message.ExtensionField();
-    OneOf: ReflectOneOf; // NOTE: only for new ProtoBuf.Reflect.Message.OneOf();
-    extensions: number[];
-    clazz(): MetaMessage;
-    isGroup: boolean;
-    build(rebuild?: boolean): MetaMessage|any;
-    encode(message: Message, buffer: Buffer, noVerify?: boolean): Buffer;
-    calculate(message: Message): number;
-    decode(buffer: Buffer, length?: number, expectedGroupEndId?: number): Message;
-}
-
-export interface ReflectEnum extends ReflectNamespace {
-    new(builder?: ProtoBuilder, parent?: ReflectT, name?: string,
-        options?: {[key: string]: any}): ReflectEnum;
-    Value: ReflectValue; // NOTE: only for new ProtoBuf.Reflect.Enum.Value();
-    object: {[key: string]:number};
-    build(): {[key: string]: any};
-}
-
-export interface ReflectExtension extends ReflectT {
-    new(builder?: ProtoBuilder, parent?: ReflectT, name?: string,
-        field?: ReflectField): ReflectExtension;
-    field: ReflectField;
-}
-
-export interface ReflectService extends ReflectNamespace {
-    new(): ReflectService;
-    Method: ReflectMethod; // NOTE: only for new ProtoBuf.Reflect.Service.Method();
-    RPCMethod: ReflectRPCMethod; // NOTE: only for new ProtoBuf.Reflect.Service.RPCMethod();
-    clazz(): Function;
-    build(rebuild?: boolean): Function|any;
-}
-
-// TODO: check that the runtime instance of this type reflects this definition
-export interface ReflectField extends ReflectT {
-    new(builder: ProtoBuilder, message: ReflectMessage, rule: string, type: string,
-        name: string, id: number, options: {[key: string]: any}, oneof: ReflectOneOf): ReflectField;
-    className: string;
-    required: boolean;
-    repeated: boolean;
-    type: string | WireTuple;
-    resolvedType: ReflectT;
-    id: number;
-    options: {[key: string]: any};
-    defaultValue: any;
-    oneof: ReflectOneOf;
-    originalName: string;
-    build(): {[key: string]: any};
-    mkLong(value: any, unsigned?: boolean): number;
-    verifyValue(value: any, skipRepeated?: boolean): any;
-    encode(value: any, buffer: Buffer): Buffer;
-    encodeValue(value: any, buffer: Buffer): Buffer;
-    calculate(value: any): number;
-    calculateValue(value: any): number;
-    decode(wireType: number, buffer: Buffer, skipRepeated?: boolean): any;
-}
-
-export interface WireTuple {
-  name: string;
-  wireType: number;
-}
-
-// TODO: check that the runtime instance of this type reflects this definition
-export interface ReflectExtensionField extends ReflectField {
-    new(builder: ProtoBuilder, message: ReflectMessage, rule: string, type: string,
-        name: string, id: number, options: {[key: string]: any}): ReflectExtensionField;
-    extension: ReflectExtension;
-}
-
-export interface ReflectOneOf extends ReflectT {
-    new(builder?: ProtoBuilder, message?: ReflectMessage, name?: string): ReflectOneOf;
-    fields: ReflectField[];
-}
-
-export interface ReflectValue extends ReflectT {
-    new(builder?: ProtoBuilder, enm?: ReflectEnum, name?: string, id?: number): ReflectValue;
-    className: string;
-    id: number;
-}
-
-export interface ReflectMethod extends ReflectT {
-    new(builder?: ProtoBuilder, svc?: ReflectService, name?: string,
-        options?: {[key: string]: any}): ReflectMethod;
-    className: string;
-    options: {[key: string]: any};
-    buildOpt(): {[key: string]: any};
-}
-
-export interface ReflectRPCMethod extends ReflectMethod {
-    new(builder?: ProtoBuilder, svc?: ReflectService, name?: string, request?: string,
-        response?: string, options?: {[key: string]: any}): ReflectRPCMethod;
-    requestName: string;
-    responseName: string;
-    resolvedRequestType: ReflectMessage;
-    resolvedResponseType: ReflectMessage;
-}
+export * from './interfaces';

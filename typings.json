@@ -10,6 +10,8 @@
     "mocha": "registry:dt/mocha#2.2.5+20160317120654"
   },
   "globalDependencies": {
+    "bytebuffer": "registry:dt/bytebuffer#5.0.0+20160602155752",
+    "long": "registry:dt/long#3.0.2+20160602144319",
     "node": "registry:env/node#6.0.0+20160610031852"
   }
 }

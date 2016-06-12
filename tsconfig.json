@@ -5,9 +5,10 @@
     "noImplicitAny": true,
     "target": "es5"
   },
-  "files": [
-    "typings/index",
-    "index"
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist"
   ],
   "formatOnSave": true,
   "formatCodeOptions": {
