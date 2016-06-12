@@ -1,4 +1,7 @@
-// Source: https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/7de6c3dd94feaeb21f20054b9f30d5dabc5efabd/protobufjs/protobufjs.d.ts
+// Type definitions for ProtoBuf.js
+// Project: https://github.com/dcodeIO/ProtoBuf.js
+// Definitions by: Panu Horsmalahti <https://github.com/panuhorsmalahti>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 // ==========
 // protobufjs/src/ProtoBuf.js
