@@ -7,7 +7,7 @@
     "mocha": "^3.3.0",
     "source-map-support": "^0.4.0",
     "tslint": "^5.2.0",
-    "typescript": "^2.3.2",
+    "typescript": "^2.3.3",
     "typings": "^2.1.1"
   },
   "scripts": {
