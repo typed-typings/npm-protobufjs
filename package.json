@@ -3,7 +3,7 @@
   "private": true,
   "description": "Typescript Typings for protobufjs",
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai": "^4.1.1",
     "mocha": "^3.3.0",
     "source-map-support": "^0.4.0",
     "tslint": "^5.2.0",
